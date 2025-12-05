@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GNPIP Automation</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- HEADER -->
+    <div class="header">
+      <h1>🤖 GNPIP Automation</h1>
+      <p>v1.0.0</p>
+    </div>
+
+    <!-- TAB NAVIGATION -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="config">⚙️ Config</button>
+      <button class="tab-btn" data-tab="csv">📊 CSV Data</button>
+      <button class="tab-btn" data-tab="control">🎮 Control</button>
+    </div>
+
+    <!-- TAB: CONFIG -->
+    <div class="tab-content active" id="config">
+      <div class="section">
+        <h3>Konfigurasi Tetap</h3>
+        
+        <div class="form-group">
+          <label>Kode Pos</label>
+          <input type="text" id="kodePos" placeholder="53319">
+        </div>
+
+        <div class="form-group">
+          <label>Nama Program</label>
+          <input type="text" id="namaProgram" placeholder="GPM Harian Kios Pangan...">
+        </div>
+
+        <div class="form-group">
+          <label>Lokasi Lainnya</label>
+          <input type="text" id="lokasiLainnya" placeholder="Komplek Pasar Ikan...">
+        </div>
+
+        <div class="form-group">
+          <label>Stakeholders Lainnya</label>
+          <input type="text" id="stakeholdersLainnya" placeholder="DKPP PURBALINGGA">
+        </div>
+
+        <div class="form-group">
+          <label>AO SS Pengendalian Inflasi (Rp)</label>
+          <input type="text" id="aoSSInflasi" placeholder="0" value="0">
+        </div>
+
+        <button class="btn btn-secondary btn-block" id="saveConfig">
+          💾 Simpan Config
+        </button>
+      </div>
+
+      <div class="section">
+        <h3>⏱️ Timing Settings (ms)</h3>
+        
+        <div class="inline-group">
+          <div class="form-group">
+            <label>Delay Field</label>
+            <input type="number" id="delayFields" value="200" min="100">
+          </div>
+          <div class="form-group">
+            <label>Delay Submit</label>
+            <input type="number" id="delaySubmit" value="2500" min="1000">
+          </div>
+        </div>
+
+        <div class="inline-group">
+          <div class="form-group">
+            <label>Delay Success</label>
+            <input type="number" id="delaySuccess" value="2000" min="1000">
+          </div>
+          <div class="form-group">
+            <label>Delay Next</label>
+            <input type="number" id="delayNext" value="2000" min="1000">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: CSV -->
+    <div class="tab-content" id="csv">
+      <div class="section">
+        <h3>📊 Data CSV</h3>
+        
+        <div class="form-group">
+          <label>Paste CSV Data</label>
+          <textarea id="csvData" placeholder="tanggal,harga,volume,selisih
+9/20/2025,11500,99,3350
+9/21/2025,11500,95,3350"></textarea>
+          <small>Format: tanggal,harga,volume,selisih</small>
+        </div>
+
+        <button class="btn btn-secondary btn-block" id="validateCSV">
+          🔍 Validasi CSV
+        </button>
+
+        <div id="csvPreview"></div>
+
+        <button class="btn btn-secondary btn-block" id="saveCSV" style="margin-top: 10px;">
+          💾 Simpan CSV
+        </button>
+      </div>
+    </div>
+
+    <!-- TAB: CONTROL -->
+    <div class="tab-content" id="control">
+      <div class="section">
+        <h3>🎮 Mode</h3>
+        
+        <div class="mode-selector">
+          <label class="mode-option active">
+            <input type="radio" name="mode" value="auto" checked>
+            <div class="mode-title">🚀 Auto</div>
+            <div class="mode-desc">Submit otomatis</div>
+          </label>
+          
+          <label class="mode-option">
+            <input type="radio" name="mode" value="manual">
+            <div class="mode-title">✋ Manual</div>
+            <div class="mode-desc">Submit manual</div>
+          </label>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>🎯 Action</h3>
+        
+        <button class="btn btn-primary btn-block" id="injectScript">
+          🚀 Inject & Start
+        </button>
+
+        <button class="btn btn-success btn-block" id="startAuto" style="margin-top: 10px;">
+          ▶️ Start Automation
+        </button>
+
+        <div class="inline-group" style="margin-top: 10px;">
+          <button class="btn btn-secondary" id="pauseBtn">⏸️ Pause</button>
+          <button class="btn btn-secondary" id="resumeBtn">▶️ Resume</button>
+        </div>
+
+        <div class="inline-group" style="margin-top: 10px;">
+          <button class="btn btn-secondary" id="skipBtn">⏭️ Skip</button>
+          <button class="btn btn-danger" id="stopBtn">⛔ Stop</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>📊 Status</h3>
+        <div id="statusDisplay" class="status-box">
+          <div class="status-item">
+            <span class="label">Progress:</span>
+            <span class="value" id="progressText">0/0</span>
+          </div>
+          <div class="status-item">
+            <span class="label">Berhasil:</span>
+            <span class="value success" id="successText">0</span>
+          </div>
+          <div class="status-item">
+            <span class="label">Gagal:</span>
+            <span class="value error" id="failText">0</span>
+          </div>
+          <div class="status-item">
+            <span class="label">Sisa:</span>
+            <span class="value" id="remainText">0</span>
+          </div>
+        </div>
+
+        <button class="btn btn-secondary btn-block" id="refreshStatus" style="margin-top: 10px;">
+          🔄 Refresh Status
+        </button>
+      </div>
+
+      <div class="section">
+        <h3>📋 Commands</h3>
+        <div class="command-list">
+          <div class="command-item">
+            <code>startFrom(N)</code>
+            <span>Mulai dari data ke-N</span>
+          </div>
+          <div class="command-item">
+            <code>next()</code>
+            <span>Data berikutnya (manual)</span>
+          </div>
+          <div class="command-item">
+            <code>status()</code>
+            <span>Lihat progress di console</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <div id="notification"></div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
